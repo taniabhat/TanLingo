@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --duo-green: #58cc02;
+  --duo-blue: #1cb0f6;
+}
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .duo-btn {
+    @apply font-extrabold uppercase tracking-wide rounded-2xl transition-all active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0;
+  }
+
+  .duo-btn-green {
+    @apply duo-btn bg-duo-green text-white shadow-duo-btn shadow-duo-green-shadow hover:bg-duo-green-dark;
+  }
+
+  .duo-btn-blue {
+    @apply duo-btn bg-duo-blue text-white shadow-duo-btn shadow-duo-blue-shadow hover:bg-duo-blue-dark;
+  }
+
+  .duo-btn-red {
+    @apply duo-btn bg-duo-red text-white shadow-duo-btn shadow-duo-red-shadow;
+  }
+
+  .duo-btn-outline {
+    @apply duo-btn bg-white dark:bg-duo-dark-card text-duo-blue border-2 border-duo-gray-light dark:border-duo-dark-border shadow-duo-btn shadow-duo-gray-light dark:shadow-duo-dark-border;
+  }
+
+  .duo-card {
+    @apply bg-white dark:bg-duo-dark-card rounded-2xl border-2 border-duo-gray-light dark:border-duo-dark-border;
+  }
+
+  .duo-input {
+    @apply w-full px-4 py-3 rounded-2xl border-2 border-duo-gray-light dark:border-duo-dark-border bg-white dark:bg-duo-dark-bg text-gray-800 dark:text-white font-bold text-lg focus:outline-none focus:border-duo-blue;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #afafaf;
+  border-radius: 4px;
+}
+
+@keyframes progress-fill {
+  from { width: 0%; }
+}
+.progress-animate {
+  animation: progress-fill 0.6s ease-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
