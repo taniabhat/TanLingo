@@ -40,7 +40,9 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
                 lesson_ids = [l.id for l in db.query(Lesson).filter(Lesson.skill_id.in_(skill_ids)).all()]
                 if lesson_ids:
                     db.query(Exercise).filter(Exercise.lesson_id.in_(lesson_ids)).delete(synchronize_session=False)
+                    db.query(UserLessonProgress).filter(UserLessonProgress.lesson_id.in_(lesson_ids)).delete(synchronize_session=False)
                     db.query(Lesson).filter(Lesson.id.in_(lesson_ids)).delete(synchronize_session=False)
+                db.query(UserProgress).filter(UserProgress.skill_id.in_(skill_ids)).delete(synchronize_session=False)
                 db.query(Skill).filter(Skill.id.in_(skill_ids)).delete(synchronize_session=False)
             db.query(Unit).filter(Unit.id.in_(unit_ids)).delete(synchronize_session=False)
         db.flush()
@@ -97,8 +99,14 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
                     prompt = ex_data[1]
                     correct = ex_data[2]
                     options = ex_data[3] if len(ex_data) > 3 else None
-                    pairs = ex_data[4] if len(ex_data) > 4 else None
-                    db.add(_ex(lesson.id, e_idx, type_, prompt, correct, options, pairs))
+                    pairs = None
+                    audio = None
+                    if type_ == "match_pairs":
+                        pairs = ex_data[4] if len(ex_data) > 4 else None
+                    elif type_ == "multiple_choice":
+                        audio = ex_data[4] if len(ex_data) > 4 else None
+
+                    db.add(_ex(lesson.id, e_idx, type_, prompt, correct, options, pairs, audio))
 
             legendary = Lesson(
                 skill_id=skill.id,
