@@ -22,7 +22,13 @@ export default function LessonPlayer({ lessonId }: { lessonId: number }) {
   const [showComplete, setShowComplete] = useState(false);
   const [showOutOfHearts, setShowOutOfHearts] = useState(false);
   const [showPause, setShowPause] = useState(false);
-  const [submitResult, setSubmitResult] = useState<{ xp: number; crown: number; streak: number } | null>(null);
+  const [submitResult, setSubmitResult] = useState<{
+    xp: number;
+    crown: number;
+    streak: number;
+    unitCompleted?: boolean;
+    gemsReward?: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useApp();
 
