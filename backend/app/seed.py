@@ -29,8 +29,7 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
     if existing:
         existing.learners_count = lang_data.get("learners_count", "10M learners")
         existing.flag_emoji = lang_data["flag_emoji"]
-        if len(existing.units) == 5:
-            return existing
+        existing.tts_locale = lang_data["tts_locale"]
         db.query(Unit).filter(Unit.course_id == existing.id).delete()
         db.flush()
         course = existing
@@ -47,7 +46,7 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
         db.add(course)
         db.flush()
 
-    units_data = build_course_units(lang_data["name"], lang_data["words"])
+    units_data = build_course_units(lang_data["name"], lang_data["units"])
 
     for u_idx, (unit_title, unit_desc, color, skills_data) in enumerate(units_data):
         unit = Unit(
