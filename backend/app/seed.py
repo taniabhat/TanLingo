@@ -1,6 +1,7 @@
 """Seed database with courses, exercises, users, and achievements."""
 import bcrypt
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from .course_data import LANGUAGE_COURSES, build_course_units
 from .enrollment import initialize_course_progress
@@ -30,7 +31,18 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
         existing.learners_count = lang_data.get("learners_count", "10M learners")
         existing.flag_emoji = lang_data["flag_emoji"]
         existing.tts_locale = lang_data["tts_locale"]
-        db.query(Unit).filter(Unit.course_id == existing.id).delete()
+
+        # Clean existing units and child objects to re-populate fresh unit content
+        unit_ids = [u.id for u in existing.units]
+        if unit_ids:
+            skill_ids = [s.id for s in db.query(Skill).filter(Skill.unit_id.in_(unit_ids)).all()]
+            if skill_ids:
+                lesson_ids = [l.id for l in db.query(Lesson).filter(Lesson.skill_id.in_(skill_ids)).all()]
+                if lesson_ids:
+                    db.query(Exercise).filter(Exercise.lesson_id.in_(lesson_ids)).delete(synchronize_session=False)
+                    db.query(Lesson).filter(Lesson.id.in_(lesson_ids)).delete(synchronize_session=False)
+                db.query(Skill).filter(Skill.id.in_(skill_ids)).delete(synchronize_session=False)
+            db.query(Unit).filter(Unit.id.in_(unit_ids)).delete(synchronize_session=False)
         db.flush()
         course = existing
     else:
