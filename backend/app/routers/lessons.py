@@ -204,9 +204,11 @@ def submit_lesson(
         if _check_answer(ans.answer, exercise.correct_answer, exercise.type):
             score += 1
 
-    failed = score < total or current_user.hearts <= 0
+    failed = current_user.hearts <= 0
     xp_earned = 0
     crown_level = 0
+    unit_completed = False
+    gems_reward = 0
 
     if not failed:
         base_xp = skill.xp_reward * (2 if lesson.is_legendary else 1)
@@ -234,14 +236,13 @@ def submit_lesson(
             if lesson.is_legendary:
                 progress.is_legendary = True
                 progress.crown_level = max(progress.crown_level, 6)
+                progress.completed = True
             else:
-                progress.crown_level = min(progress.crown_level + 1, 5)
-                if progress.crown_level >= 1:
-                    progress.completed = progress.crown_level >= 5
+                progress.crown_level = max(progress.crown_level, 1)
+                progress.completed = True
             progress.xp_earned += xp_earned
             crown_level = progress.crown_level
-            if progress.crown_level >= 1:
-                _unlock_next_skill(current_user.id, skill, db)
+            _unlock_next_skill(current_user.id, skill, db)
 
         lp = (
             db.query(UserLessonProgress)
@@ -256,9 +257,6 @@ def submit_lesson(
             db.add(lp)
         lp.completed = True
         lp.score = score
-
-        unit_completed = False
-        gems_reward = 0
         if skill and skill.unit:
             unit_skills = skill.unit.skills
             all_completed = True
