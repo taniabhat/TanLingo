@@ -1,8 +1,9 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
+from ..email_service import send_course_completion_email
 from ..models import (
     User, Lesson, Exercise, UserProgress, UserLessonProgress,
     Skill, Achievement, UserAchievement, Unit,
@@ -154,12 +155,13 @@ def deduct_heart(
 def submit_lesson(
     lesson_id: int,
     submission: LessonSubmitRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     lesson = (
         db.query(Lesson)
-        .options(joinedload(Lesson.exercises), joinedload(Lesson.skill).joinedload(Skill.unit))
+        .options(joinedload(Lesson.exercises), joinedload(Lesson.skill).joinedload(Skill.unit).joinedload(Unit.course))
         .filter(Lesson.id == lesson_id)
         .first()
     )
@@ -252,6 +254,13 @@ def submit_lesson(
                 unit_completed = True
                 gems_reward = 100
                 current_user.gems += 100
+                course_name = skill.unit.course.name if skill.unit.course else "Language Course"
+                background_tasks.add_task(
+                    send_course_completion_email,
+                    current_user.email,
+                    current_user.username,
+                    course_name,
+                )
 
     db.commit()
     db.refresh(current_user)

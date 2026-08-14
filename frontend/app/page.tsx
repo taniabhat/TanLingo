@@ -1,23 +1,41 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function SplashPage() {
   const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (videoRef.current.readyState >= 3) {
+        setVideoLoaded(true);
+      }
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-between bg-black text-white relative overflow-hidden">
       {/* Background Video — Full-screen & Responsive */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black">
         <video
+          ref={videoRef}
           src="/splash.mp4"
           autoPlay
           loop
           playsInline
           muted
-          className="w-full h-full object-cover opacity-90"
+          preload="auto"
+          onLoadedData={() => setVideoLoaded(true)}
+          onCanPlay={() => setVideoLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-700 ${
+            videoLoaded ? "opacity-90" : "opacity-0"
+          }`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/30" />
       </div>
