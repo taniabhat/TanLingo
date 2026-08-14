@@ -12,6 +12,13 @@ from .models import (
 
 
 def _ex(lesson_id, order_index, type_, prompt, correct, options=None, pairs=None, audio=None, hint=None):
+    extracted_audio = audio
+    if not extracted_audio and prompt:
+        import re
+        match = re.search(r"'([^']+)'", prompt)
+        if match:
+            extracted_audio = match.group(1)
+
     return Exercise(
         lesson_id=lesson_id,
         order_index=order_index,
@@ -20,7 +27,7 @@ def _ex(lesson_id, order_index, type_, prompt, correct, options=None, pairs=None
         correct_answer=correct,
         options=options,
         pairs=pairs,
-        audio_text=audio or (correct.split("|")[0] if correct else None),
+        audio_text=extracted_audio,
         hint=hint,
     )
 
@@ -116,12 +123,29 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
             )
             db.add(legendary)
             db.flush()
-            first_correct = exercises_data[0][2] if exercises_data else "hello"
-            first_options = exercises_data[0][3] if exercises_data and len(exercises_data[0]) > 3 else ["hello", "goodbye"]
+
+            # Create proper Legendary exercises using unit words
+            u_words = lang_data.get("units", {}).get(u_idx + 1, {})
+            sample_key = list(u_words.keys())[0] if u_words else "coffee"
+            sample_target, sample_eng = u_words.get(sample_key, ("Café", "Coffee"))
+            other_engs = [v[1] for k, v in u_words.items() if k != sample_key][:3]
+            if len(other_engs) < 3:
+                other_engs += ["Goodbye", "Thank you", "Please"][: 3 - len(other_engs)]
+
             legendary_exercises = [
-                ("type_answer", f"Legendary: Type the hardest word from {skill_title}", first_correct, None),
-                ("multiple_choice", f"Legendary challenge for {skill_title}", first_options[0] if first_options else first_correct, first_options),
-                ("translate", f"Legendary translate for {skill_title}", first_correct, first_options),
+                ("type_answer", f"Type '{sample_eng}' in {lang_data['name']}", sample_target, None),
+                (
+                    "multiple_choice",
+                    f"Select the correct English translation for: '{sample_target}'",
+                    sample_eng,
+                    [sample_eng] + other_engs[:3],
+                ),
+                (
+                    "translate",
+                    f"Translate to English: '{sample_target}'",
+                    sample_eng,
+                    [sample_eng] + other_engs[:3] + ["Hello"],
+                ),
             ]
             for e_idx, ex_data in enumerate(legendary_exercises):
                 type_, prompt, correct, options = ex_data

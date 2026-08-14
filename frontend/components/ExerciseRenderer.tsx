@@ -42,31 +42,85 @@ function AccentBar({ locale = "es-ES", onInsert }: { locale?: string; onInsert: 
   );
 }
 
+function getQuotedText(text: string): string | null {
+  const match = text.match(/'([^']+)'/);
+  return match ? match[1] : null;
+}
+
+export function getExerciseInfo(exercise: ExerciseOut, ttsLocale: string = "es-ES") {
+  const quoted = getQuotedText(exercise.prompt);
+
+  let badge = "EXERCISE";
+  let title = exercise.prompt;
+  let spokenText = exercise.audio_text || quoted || exercise.prompt;
+  let spokenLocale = ttsLocale;
+
+  if (exercise.type === "translate") {
+    if (exercise.prompt.toLowerCase().includes("translate to english")) {
+      badge = "WRITE THIS IN ENGLISH";
+      title = "Write this in English";
+      spokenLocale = ttsLocale;
+    } else {
+      const langMatch = exercise.prompt.match(/translate to ([^:]+):/i);
+      const targetLang = langMatch ? langMatch[1].trim() : "Target Language";
+      badge = `WRITE THIS IN ${targetLang.toUpperCase()}`;
+      title = `Write this in ${targetLang}`;
+      spokenLocale = "en-US";
+    }
+    if (quoted) spokenText = quoted;
+  } else if (exercise.type === "multiple_choice") {
+    badge = "SELECT THE CORRECT ANSWER";
+    if (
+      exercise.prompt.toLowerCase().includes("english translation") ||
+      exercise.prompt.toLowerCase().includes("english meaning")
+    ) {
+      title = "Select the correct English translation";
+      spokenLocale = ttsLocale;
+    } else if (exercise.prompt.toLowerCase().includes("translation for:")) {
+      const langMatch = exercise.prompt.match(/select the correct (.+) translation/i);
+      const targetLang = langMatch ? langMatch[1].trim() : "";
+      title = targetLang ? `Select the correct ${targetLang} translation` : "Select the correct answer";
+      spokenLocale = "en-US";
+    } else {
+      title = "Select the correct answer";
+      spokenLocale = ttsLocale;
+    }
+    if (quoted) spokenText = quoted;
+  } else if (exercise.type === "type_answer") {
+    badge = "TYPE THE ANSWER";
+    title = exercise.prompt;
+    spokenLocale = "en-US";
+    if (quoted) spokenText = quoted;
+  } else if (exercise.type === "fill_blank") {
+    badge = "FILL IN THE BLANK";
+    title = "Fill in the blank";
+    spokenLocale = ttsLocale;
+    if (exercise.audio_text) spokenText = exercise.audio_text;
+  } else if (exercise.type === "match_pairs") {
+    badge = "MATCH THE PAIRS";
+    title = exercise.prompt;
+    spokenLocale = ttsLocale;
+  }
+
+  return { badge, title, spokenText, spokenLocale };
+}
+
 function ExerciseHeader({ exercise, ttsLocale = "es-ES" }: { exercise: ExerciseOut; ttsLocale?: string }) {
   const { speak } = useAudio();
-
-  const typeLabels: Record<string, string> = {
-    multiple_choice: "Select the correct answer",
-    translate: "Write this in English",
-    match_pairs: "Match the pairs",
-    fill_blank: "Fill in the blank",
-    type_answer: "Type the answer",
-  };
-
-  const textToSpeak = exercise.audio_text || exercise.prompt.replace(/^Translate:\s*/i, "");
+  const { badge, title, spokenText, spokenLocale } = getExerciseInfo(exercise, ttsLocale);
 
   useEffect(() => {
-    if (textToSpeak) {
+    if (spokenText) {
       const timer = setTimeout(() => {
-        speak(textToSpeak, ttsLocale);
+        speak(spokenText, spokenLocale);
       }, 250);
       return () => clearTimeout(timer);
     }
-  }, [exercise.id, textToSpeak, ttsLocale, speak]);
+  }, [exercise.id, spokenText, spokenLocale, speak]);
 
   const handlePlayAudio = () => {
-    if (textToSpeak) {
-      speak(textToSpeak, ttsLocale);
+    if (spokenText) {
+      speak(spokenText, spokenLocale);
     }
   };
 
@@ -74,12 +128,12 @@ function ExerciseHeader({ exercise, ttsLocale = "es-ES" }: { exercise: ExerciseO
     <div className="mb-8">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-xs font-black px-2.5 py-1 rounded-full bg-duo-purple/20 text-duo-purple uppercase tracking-widest flex items-center gap-1">
-          <span>✨</span> {typeLabels[exercise.type] || "New Word"}
+          <span>✨</span> {badge}
         </span>
       </div>
 
       <h2 className="text-2xl sm:text-3xl font-black text-gray-800 dark:text-white mb-6">
-        {typeLabels[exercise.type] || exercise.prompt}
+        {title}
       </h2>
 
       {/* Character Mascot + Speech Bubble */}
@@ -100,7 +154,7 @@ function ExerciseHeader({ exercise, ttsLocale = "es-ES" }: { exercise: ExerciseO
           </div>
 
           <span className="font-extrabold text-xl sm:text-2xl text-gray-800 dark:text-white border-b-2 border-dotted border-duo-blue pb-0.5">
-            {textToSpeak}
+            {spokenText}
           </span>
         </div>
       </div>
@@ -115,7 +169,8 @@ function MultipleChoice({ exercise, onAnswer, disabled, feedback, ttsLocale }: E
   const handleSelect = (option: string) => {
     if (disabled) return;
     playPop();
-    speak(option, ttsLocale);
+    const isEnglishOption = /^[a-zA-Z0-9\s.,!?'"]+$/.test(option);
+    speak(option, isEnglishOption ? "en-US" : ttsLocale);
     setSelected(option);
   };
 
@@ -172,7 +227,8 @@ function TranslateExercise({ exercise, onAnswer, disabled, feedback, ttsLocale }
   const addWord = (word: string, idx: number) => {
     if (disabled) return;
     playPop();
-    speak(word, ttsLocale);
+    const isEnglishWord = /^[a-zA-Z0-9\s.,!?'"]+$/.test(word);
+    speak(word, isEnglishWord ? "en-US" : ttsLocale);
     setSelected([...selected, word]);
     setBank(bank.filter((_, i) => i !== idx));
   };

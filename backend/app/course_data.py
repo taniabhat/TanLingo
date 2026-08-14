@@ -643,18 +643,30 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
             t_target, t_eng = w.get("tea", ("Té", "Tea"))
             w_target, w_eng = w.get("water", ("Agua", "Water"))
             p_target, p_eng = w.get("please", ("Por favor", "Please"))
+            th_target, th_eng = w.get("thanks", ("Gracias", "Thank you"))
 
             ex_list = [
                 mc(
                     f"Select the correct English translation for: '{w_target}, {p_target}.'",
                     f"{w_eng}, {p_eng.lower()}.",
-                    [f"{w_eng}, {p_eng.lower()}.", f"{c_eng} and {t_eng.lower()}.", "Hello, my name is Alex.", "Where is the hotel?"],
+                    [f"{w_eng}, {p_eng.lower()}.", f"{c_eng} and {t_eng.lower()}.", "Where is the hotel?", f"{th_eng}!"],
                     f"{w_target}, {p_target}."
                 ),
                 translate(
                     f"Translate to {lang}: '{c_eng}, {p_eng.lower()}.'",
                     f"{c_target} {p_target}",
                     [c_target, p_target, w_target, t_target, "Hola"]
+                ),
+                translate(
+                    f"Translate to English: '{th_target}'",
+                    f"{th_eng}",
+                    [th_eng, "Please", "Water", "Coffee", "Hello"]
+                ),
+                mc(
+                    f"Select the correct {lang} translation for: '{t_eng}'",
+                    f"{t_target}",
+                    [t_target, c_target, w_target, p_target],
+                    f"{t_eng}"
                 ),
                 type_answer(f"Type '{c_eng}' in {lang}", c_target),
                 fill_blank(f"Complete: ___ {p_target} ({t_eng} please)", t_target),
@@ -677,18 +689,30 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
             g_target, g_eng = w.get("goodbye", ("Adiós", "Goodbye"))
             m_target, m_eng = w.get("my_name", ("Me llamo", "My name is"))
             n_target, n_eng = w.get("nice_meet", ("Mucho gusto", "Nice to meet you"))
+            y_target, y_eng = w.get("yes", ("Sí", "Yes"))
 
             ex_list = [
                 mc(
                     f"Select the correct English meaning of: '{h_target}, {m_target} Juan.'",
                     f"{h_eng}, {m_eng.lower()} Juan.",
-                    [f"{h_eng}, {m_eng.lower()} Juan.", f"{g_eng}, see you tomorrow.", "Where is the station?", "How much is this?"],
+                    [f"{h_eng}, {m_eng.lower()} Juan.", f"{g_eng}, see you tomorrow.", f"{n_eng}.", f"{y_eng}, thank you."],
                     f"{h_target}, {m_target} Juan."
                 ),
                 translate(
                     f"Translate to {lang}: '{h_eng}, {g_eng.lower()}!'",
                     f"{h_target} {g_target}",
                     [h_target, g_target, m_target, n_target, "Sí"]
+                ),
+                translate(
+                    f"Translate to English: '{n_target}!'",
+                    f"{n_eng}!",
+                    [n_eng, "Hello", "Goodbye", "Yes", "Please"]
+                ),
+                mc(
+                    f"Select the correct {lang} word for: '{g_eng}'",
+                    f"{g_target}",
+                    [g_target, h_target, m_target, n_target],
+                    f"{g_eng}"
                 ),
                 type_answer(f"Type '{h_eng}' in {lang}", h_target),
                 fill_blank(f"Complete: ___ {m_target} Maria ({h_eng}, my name is Maria)", h_target),
@@ -711,21 +735,33 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
             h_target, h_eng = w.get("hotel", ("Hotel", "Hotel"))
             s_target, s_eng = w.get("station", ("Estación", "Station"))
             r_target, r_eng = w.get("restaurant", ("Restaurante", "Restaurant"))
+            l_target, l_eng = w.get("left", ("Izquierda", "Left"))
 
             ex_list = [
                 mc(
-                    f"Select the correct English translation for: '{w_target} el {h_target}?'",
+                    f"Select the correct English translation for: '{w_target} {h_target}?'",
                     f"{w_eng} the {h_eng.lower()}?",
-                    [f"{w_eng} the {h_eng.lower()}?", "My mother is happy.", "A coffee please.", "This shirt costs 20 dollars."],
-                    f"{w_target} el {h_target}?"
+                    [f"{w_eng} the {h_eng.lower()}?", f"Where is the {r_eng.lower()}?", f"Where is the {s_eng.lower()}?", "Turn left here."],
+                    f"{w_target} {h_target}?"
                 ),
                 translate(
                     f"Translate to {lang}: '{w_eng} the {s_eng.lower()}?'",
                     f"{w_target} {s_target}",
                     [w_target, s_target, h_target, r_target, "Hola"]
                 ),
+                translate(
+                    f"Translate to English: '{r_target}'",
+                    f"{r_eng}",
+                    [r_eng, h_eng, s_eng, "Left", "Right"]
+                ),
+                mc(
+                    f"Select the correct {lang} translation for: '{s_eng}'",
+                    f"{s_target}",
+                    [s_target, h_target, r_target, l_target],
+                    f"{s_eng}"
+                ),
                 type_answer(f"Type '{h_eng}' in {lang}", h_target),
-                fill_blank(f"Complete: {w_target} el ___? (Where is the {r_eng.lower()}?)", r_target),
+                fill_blank(f"Complete: {w_target} ___? (Where is the {r_eng.lower()}?)", r_target),
                 match_pairs(
                     f"Match {lang} city terms with English meanings",
                     f"{h_target}:{h_eng}|{s_target}:{s_eng}|{r_target}:{r_eng}|{w_target}:{w_eng}",
@@ -745,21 +781,33 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
             f_target, f_eng = w.get("father", ("Padre", "Father"))
             b_target, b_eng = w.get("brother", ("Hermano", "Brother"))
             s_target, s_eng = w.get("sister", ("Hermana", "Sister"))
+            fr_target, fr_eng = w.get("friend", ("Amigo", "Friend"))
 
             ex_list = [
                 mc(
-                    f"Select the correct English meaning for: '{m_target} y {f_target}.'",
+                    f"Select the correct English meaning for: '{m_target} and {f_target}.'",
                     f"{m_eng} and {f_eng.lower()}.",
-                    [f"{m_eng} and {f_eng.lower()}.", "Hotel and restaurant.", "Where is the station?", "Thank you very much."],
-                    f"{m_target} y {f_target}."
+                    [f"{m_eng} and {f_eng.lower()}.", f"{b_eng} and {s_eng.lower()}.", f"{fr_eng} and family.", "Hotel and station."],
+                    f"{m_target} and {f_target}."
                 ),
                 translate(
                     f"Translate to {lang}: '{b_eng} and {s_eng.lower()}.'",
                     f"{b_target} {s_target}",
                     [b_target, s_target, m_target, f_target, "Agua"]
                 ),
+                translate(
+                    f"Translate to English: '{fr_target}'",
+                    f"{fr_eng}",
+                    [fr_eng, "Mother", "Father", "Brother", "Sister"]
+                ),
+                mc(
+                    f"Select the correct {lang} word for: '{m_eng}'",
+                    f"{m_target}",
+                    [m_target, f_target, b_target, s_target],
+                    f"{m_eng}"
+                ),
                 type_answer(f"Type '{m_eng}' in {lang}", m_target),
-                fill_blank(f"Complete: {b_target} y ___ ({b_eng} and {s_eng.lower()})", s_target),
+                fill_blank(f"Complete: {b_target} and ___ ({b_eng} and {s_eng.lower()})", s_target),
                 match_pairs(
                     f"Match {lang} family terms with English translations",
                     f"{m_target}:{m_eng}|{f_target}:{f_eng}|{b_target}:{b_eng}|{s_target}:{s_eng}",
@@ -779,21 +827,33 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
             s_target, s_eng = w.get("shirt", ("Camisa", "Shirt"))
             sh_target, sh_eng = w.get("shoes", ("Zapatos", "Shoes"))
             p_target, p_eng = w.get("price", ("Precio", "Price"))
+            c_target, c_eng = w.get("cheap", ("Barato", "Cheap"))
 
             ex_list = [
                 mc(
-                    f"Select the correct English meaning for: '{h_target} esta {s_target.lower()}?'",
+                    f"Select the correct English meaning for: '{h_target} {s_target}?'",
                     f"{h_eng} is this {s_eng.lower()}?",
-                    [f"{h_eng} is this {s_eng.lower()}?", "Where is my brother?", "Nice to meet you.", "A glass of water."],
-                    f"{h_target} esta {s_target.lower()}?"
+                    [f"{h_eng} is this {s_eng.lower()}?", f"{h_eng} are the {sh_eng.lower()}?", f"What is the {p_eng.lower()}?", "A glass of water."],
+                    f"{h_target} {s_target}?"
                 ),
                 translate(
                     f"Translate to {lang}: '{h_eng} are the {sh_eng.lower()}?'",
                     f"{h_target} {sh_target}",
                     [h_target, sh_target, s_target, p_target, "Gracias"]
                 ),
+                translate(
+                    f"Translate to English: '{p_target}'",
+                    f"{p_eng}",
+                    [p_eng, "Shirt", "Shoes", "Cheap", "Card"]
+                ),
+                mc(
+                    f"Select the correct {lang} translation for: '{sh_eng}'",
+                    f"{sh_target}",
+                    [sh_target, s_target, p_target, c_target],
+                    f"{sh_eng}"
+                ),
                 type_answer(f"Type '{s_eng}' in {lang}", s_target),
-                fill_blank(f"Complete: {h_target} el ___? (How much is the {p_eng.lower()}?)", p_target),
+                fill_blank(f"Complete: {h_target} ___? (How much is the {p_eng.lower()}?)", p_target),
                 match_pairs(
                     f"Match {lang} shopping terms with English meanings",
                     f"{s_target}:{s_eng}|{sh_target}:{sh_eng}|{p_target}:{p_eng}|{h_target}:{h_eng}",
@@ -823,3 +883,4 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
         ))
 
     return units_data
+
