@@ -133,7 +133,7 @@ def _seed_course(db: Session, lang_data: dict) -> Course | None:
                 other_engs += ["Goodbye", "Thank you", "Please"][: 3 - len(other_engs)]
 
             legendary_exercises = [
-                ("type_answer", f"Type '{sample_eng}' in {lang_data['name']}", sample_target, None),
+                ("type_answer", f"Type the English meaning of: '{sample_target}'", sample_eng, None),
                 (
                     "multiple_choice",
                     f"Select the correct English translation for: '{sample_target}'",

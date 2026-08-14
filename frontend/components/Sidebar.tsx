@@ -33,7 +33,7 @@ export default function Sidebar() {
         <div className="p-6">
           <Link href="/learn" className="flex items-center gap-2">
             <span className="text-3xl">🦉</span>
-            <span className="text-2xl font-extrabold text-duo-green tracking-tight">duolingo</span>
+            <span className="text-2xl font-extrabold text-duo-green tracking-tight">tanLingo</span>
           </Link>
         </div>
         <nav className="flex-1 px-4 space-y-1">

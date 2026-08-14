@@ -87,15 +87,16 @@ export function getExerciseInfo(exercise: ExerciseOut, ttsLocale: string = "es-E
     }
     if (quoted) spokenText = quoted;
   } else if (exercise.type === "type_answer") {
-    badge = "TYPE THE ANSWER";
-    title = exercise.prompt;
-    spokenLocale = "en-US";
+    badge = "TYPE IN ENGLISH";
+    title = "Type the English meaning";
+    spokenLocale = ttsLocale;
     if (quoted) spokenText = quoted;
   } else if (exercise.type === "fill_blank") {
     badge = "FILL IN THE BLANK";
-    title = "Fill in the blank";
+    title = "Fill in the blank in English";
     spokenLocale = ttsLocale;
-    if (exercise.audio_text) spokenText = exercise.audio_text;
+    if (quoted) spokenText = quoted;
+    else if (exercise.audio_text) spokenText = exercise.audio_text;
   } else if (exercise.type === "match_pairs") {
     badge = "MATCH THE PAIRS";
     title = exercise.prompt;
@@ -334,7 +335,7 @@ function TypeAnswer({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerc
           feedback === "correct" && "border-duo-green bg-duo-green/10",
           feedback === "wrong" && "border-duo-red bg-duo-red/10 shake"
         )}
-        placeholder="Type what you hear..."
+        placeholder="Type the English meaning..."
         autoFocus
       />
 
@@ -388,7 +389,7 @@ function FillBlank({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerci
           feedback === "correct" && "border-duo-green bg-duo-green/10",
           feedback === "wrong" && "border-duo-red bg-duo-red/10 shake"
         )}
-        placeholder="..."
+        placeholder="Type missing English word..."
         autoFocus
       />
 

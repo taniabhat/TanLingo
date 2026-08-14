@@ -27,7 +27,7 @@ export default function SplashPage() {
         <div className="flex items-center gap-2">
           <span className="text-3xl sm:text-4xl">🦉</span>
           <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow">
-            duolingo
+            tanLingo
           </span>
         </div>
       </div>

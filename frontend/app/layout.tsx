@@ -6,8 +6,8 @@ import SoundProvider from "@/components/SoundProvider";
 import MainContainer from "@/components/MainContainer";
 
 export const metadata: Metadata = {
-  title: "Duolingo Clone — Learn 10+ Languages",
-  description: "Learn languages with fun, bite-sized lessons",
+  title: "TanLingo — Learn 10+ Languages",
+  description: "Learn languages for free. Fun, interactive lessons and real pronunciation!",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

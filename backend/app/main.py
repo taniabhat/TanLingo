@@ -7,7 +7,7 @@ from .database import engine, Base, SessionLocal
 from .routers import auth, courses, lessons, user
 from .seed import seed_database
 
-app = FastAPI(title="Duolingo Clone API", version="1.0.0")
+app = FastAPI(title="TanLingo API", version="1.0.0")
 
 frontend_url = os.getenv("FRONTEND_URL", "*")
 
@@ -63,4 +63,4 @@ def startup():
 
 @app.get("/")
 def root():
-    return {"message": "Duolingo Clone API", "docs": "/docs"}
+    return {"message": "TanLingo API", "docs": "/docs"}
