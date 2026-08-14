@@ -191,19 +191,19 @@ function UnitSectionCurvy({
 }) {
   const headerColor = unit.color || "#58cc02";
 
-  // Calculate unit progress from completed regular lessons & crowns
+  // Calculate unit progress from completed skills & lessons
+  const totalSkills = unit.skills.length || 1;
+  const completedSkills = unit.skills.filter(
+    (s) => s.completed || s.crown_level >= 1 || s.lessons.some((l) => l.completed)
+  ).length;
+  const skillPercent = (completedSkills / totalSkills) * 100;
+
   const regularLessons = unit.skills.flatMap((s) => s.lessons.filter((l) => !l.is_legendary));
   const completedRegular = regularLessons.filter((l) => l.completed).length;
   const totalRegular = regularLessons.length || 1;
+  const lessonPercent = (completedRegular / totalRegular) * 100;
 
-  let progressPercent = (completedRegular / totalRegular) * 100;
-  if (progressPercent === 0) {
-    const completedSkillsCount = unit.skills.filter((s) => s.completed || s.crown_level >= 1).length;
-    if (completedSkillsCount > 0) {
-      progressPercent = (completedSkillsCount / unit.skills.length) * 100;
-    }
-  }
-
+  const progressPercent = Math.max(skillPercent, lessonPercent);
   const isUnitComplete = progressPercent >= 100;
 
   return (

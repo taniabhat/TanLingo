@@ -22,6 +22,7 @@ def _build_skill(skill: Skill, user: User, db: Session) -> SkillOut:
     completed = progress.completed if progress else False
 
     lessons_out = []
+    any_lesson_completed = False
     for lesson in sorted(skill.lessons, key=lambda l: l.order_index):
         lp = (
             db.query(UserLessonProgress)
@@ -31,16 +32,22 @@ def _build_skill(skill: Skill, user: User, db: Session) -> SkillOut:
             )
             .first()
         )
+        is_lp_comp = lp.completed if lp else False
+        if is_lp_comp:
+            any_lesson_completed = True
         lessons_out.append(
             LessonOut(
                 id=lesson.id,
                 title=lesson.title,
                 order_index=lesson.order_index,
                 is_legendary=lesson.is_legendary,
-                completed=lp.completed if lp else False,
+                completed=is_lp_comp,
                 exercise_count=len(lesson.exercises),
             )
         )
+
+    if not completed and (any_lesson_completed or (progress and (progress.crown_level >= 1 or progress.xp_earned > 0))):
+        completed = True
 
     return SkillOut(
         id=skill.id,
