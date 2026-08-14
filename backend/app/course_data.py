@@ -669,7 +669,7 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
                     f"{t_eng}"
                 ),
                 type_answer(f"Type the English meaning of: '{c_target}'", c_eng),
-                fill_blank(f"Complete the English translation: ___ please ('{t_target}, {p_target}')", t_eng),
+                fill_blank(f"Complete the English translation: ___ please ('{t_target}, {p_target}')", f"{t_eng}|{t_eng} please|{t_eng}, please"),
                 match_pairs(
                     f"Match {lang} café terms with English meanings",
                     f"{c_target}:{c_eng}|{t_target}:{t_eng}|{w_target}:{w_eng}|{p_target}:{p_eng}",
@@ -715,7 +715,7 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
                     f"{g_eng}"
                 ),
                 type_answer(f"Type the English meaning of: '{h_target}'", h_eng),
-                fill_blank(f"Complete the English translation: ___ my name is Maria ('{h_target}, {m_target} Maria')", h_eng),
+                fill_blank(f"Complete the English translation: ___ my name is Maria ('{h_target}, {m_target} Maria')", f"{h_eng}|{h_eng} my name is Maria|{h_eng}, my name is Maria"),
                 match_pairs(
                     f"Match {lang} greetings with English translations",
                     f"{h_target}:{h_eng}|{g_target}:{g_eng}|{m_target}:{m_eng}|{n_target}:{n_eng}",
@@ -761,7 +761,7 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
                     f"{s_eng}"
                 ),
                 type_answer(f"Type the English meaning of: '{h_target}'", h_eng),
-                fill_blank(f"Complete the English translation: Where is the ___? ('{w_target} {r_target}?')", r_eng),
+                fill_blank(f"Complete the English translation: Where is the ___? ('{w_target} {r_target}?')", f"{r_eng}|where is the {r_eng.lower()}"),
                 match_pairs(
                     f"Match {lang} city terms with English meanings",
                     f"{h_target}:{h_eng}|{s_target}:{s_eng}|{r_target}:{r_eng}|{w_target}:{w_eng}",
@@ -807,7 +807,7 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
                     f"{m_eng}"
                 ),
                 type_answer(f"Type the English meaning of: '{m_target}'", m_eng),
-                fill_blank(f"Complete the English translation: brother and ___ ('{b_target} {s_target}')", s_eng),
+                fill_blank(f"Complete the English translation: brother and ___ ('{b_target} {s_target}')", f"{s_eng}|brother and {s_eng.lower()}"),
                 match_pairs(
                     f"Match {lang} family terms with English translations",
                     f"{m_target}:{m_eng}|{f_target}:{f_eng}|{b_target}:{b_eng}|{s_target}:{s_eng}",
@@ -853,7 +853,7 @@ def build_course_units(lang_name: str, unit_words_dict: dict) -> list:
                     f"{sh_eng}"
                 ),
                 type_answer(f"Type the English meaning of: '{s_target}'", s_eng),
-                fill_blank(f"Complete the English translation: How much is the ___? ('{h_target} {p_target}?')", p_eng),
+                fill_blank(f"Complete the English translation: How much is the ___? ('{h_target} {p_target}?')", f"{p_eng}|how much is the {p_eng.lower()}"),
                 match_pairs(
                     f"Match {lang} shopping terms with English meanings",
                     f"{s_target}:{s_eng}|{sh_target}:{sh_eng}|{p_target}:{p_eng}|{h_target}:{h_eng}",

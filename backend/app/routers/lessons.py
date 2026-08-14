@@ -151,6 +151,30 @@ def deduct_heart(
     )
 
 
+def _normalize_text(text: str) -> str:
+    import re
+    return re.sub(r'[^a-z0-9\s]', '', text.lower()).strip()
+
+
+def _check_answer(user_ans: str, correct_ans: str, ex_type: str) -> bool:
+    if ex_type == "match_pairs":
+        return user_ans.strip() == correct_ans.strip()
+
+    u = _normalize_text(user_ans)
+    alternatives = [a.strip() for a in correct_ans.split("|")]
+    for alt in alternatives:
+        c = _normalize_text(alt)
+        if u == c:
+            return True
+        if ex_type in ("fill_blank", "type_answer", "translate"):
+            u_words = [w for w in u.split() if w]
+            c_words = [w for w in c.split() if w]
+            if u_words and c_words:
+                if all(w in c_words for w in u_words) or all(w in u_words for w in c_words):
+                    return True
+    return False
+
+
 @router.post("/{lesson_id}/submit", response_model=LessonSubmitResponse)
 def submit_lesson(
     lesson_id: int,
@@ -177,10 +201,7 @@ def submit_lesson(
         exercise = exercise_map.get(ans.exercise_id)
         if not exercise:
             continue
-        correct = ans.answer.strip().lower() == exercise.correct_answer.strip().lower()
-        if exercise.type == "match_pairs":
-            correct = ans.answer.strip() == exercise.correct_answer.strip()
-        if correct:
+        if _check_answer(ans.answer, exercise.correct_answer, exercise.type):
             score += 1
 
     failed = score < total or current_user.hearts <= 0

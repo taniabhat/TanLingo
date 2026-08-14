@@ -42,6 +42,32 @@ function AccentBar({ locale = "es-ES", onInsert }: { locale?: string; onInsert: 
   );
 }
 
+function normalizeText(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+}
+
+export function isAnswerCorrect(userAns: string, correctAns: string, type: string): boolean {
+  const u = normalizeText(userAns);
+  if (!u) return false;
+
+  const alts = correctAns.split("|");
+  for (const alt of alts) {
+    const c = normalizeText(alt);
+    if (u === c) return true;
+
+    if (type === "fill_blank" || type === "type_answer" || type === "translate") {
+      const uWords = u.split(" ").filter(Boolean);
+      const cWords = c.split(" ").filter(Boolean);
+      if (uWords.length > 0 && cWords.length > 0) {
+        if (uWords.every((w) => cWords.includes(w)) || cWords.every((w) => uWords.includes(w))) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 function getQuotedText(text: string): string | null {
   const match = text.match(/'([^']+)'/);
   return match ? match[1] : null;
@@ -316,7 +342,8 @@ function TypeAnswer({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerc
   const handleSubmit = () => {
     if (!value.trim() || disabled) return;
     playPop();
-    onAnswer(value.trim(), value.trim().toLowerCase() === exercise.correct_answer.toLowerCase());
+    const correct = isAnswerCorrect(value.trim(), exercise.correct_answer, "type_answer");
+    onAnswer(value.trim(), correct);
   };
 
   return (
@@ -359,6 +386,10 @@ function FillBlank({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerci
   const inputRef = useRef<HTMLInputElement>(null);
   const { playPop } = useAudio();
 
+  const fillPrompt = exercise.prompt
+    .replace(/\s*\('[^']+'\)\s*$/, "")
+    .replace(/^Complete the English translation:\s*/i, "Complete: ");
+
   const handleInsertAccent = (char: string) => {
     playPop();
     setValue((prev) => prev + char);
@@ -370,12 +401,19 @@ function FillBlank({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerci
   const handleSubmit = () => {
     if (!value.trim() || disabled) return;
     playPop();
-    onAnswer(value.trim(), value.trim().toLowerCase() === exercise.correct_answer.toLowerCase());
+    const correct = isAnswerCorrect(value.trim(), exercise.correct_answer, "fill_blank");
+    onAnswer(value.trim(), correct);
   };
 
   return (
     <div>
       <ExerciseHeader exercise={exercise} ttsLocale={ttsLocale} />
+
+      {fillPrompt && (
+        <div className="mb-4 p-4 rounded-2xl bg-duo-blue/10 border-2 border-duo-blue/30 text-center font-extrabold text-lg sm:text-xl text-duo-blue">
+          {fillPrompt}
+        </div>
+      )}
 
       <input
         ref={inputRef}
@@ -385,11 +423,11 @@ function FillBlank({ exercise, onAnswer, disabled, feedback, ttsLocale }: Exerci
         disabled={disabled}
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
         className={cn(
-          "duo-input mb-4 p-4 rounded-2xl border-2 text-lg font-bold max-w-sm w-full",
+          "duo-input mb-4 p-4 rounded-2xl border-2 text-lg font-bold w-full",
           feedback === "correct" && "border-duo-green bg-duo-green/10",
           feedback === "wrong" && "border-duo-red bg-duo-red/10 shake"
         )}
-        placeholder="Type missing English word..."
+        placeholder="Type missing word or full phrase..."
         autoFocus
       />
 
